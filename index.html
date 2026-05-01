@@ -278,6 +278,14 @@
     .rationale-grid { grid-template-columns: 1fr; gap: 8px; }
   }
 </style>
+<script>
+  (function routePasswordRecovery() {
+    var hash = window.location.hash || "";
+    if (hash.indexOf("type=recovery") !== -1 || hash.indexOf("access_token=") !== -1) {
+      window.location.replace("/reset-password.html" + window.location.search + hash);
+    }
+  })();
+</script>
 </head>
 <body>
   <header class="header">
