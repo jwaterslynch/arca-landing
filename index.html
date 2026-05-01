@@ -281,7 +281,15 @@
 <script>
   (function routePasswordRecovery() {
     var hash = window.location.hash || "";
-    if (hash.indexOf("type=recovery") !== -1 || hash.indexOf("access_token=") !== -1) {
+    var query = window.location.search || "";
+    var params = new URLSearchParams(query);
+    if (
+      hash.indexOf("type=recovery") !== -1 ||
+      hash.indexOf("access_token=") !== -1 ||
+      params.get("type") === "recovery" ||
+      params.get("token_hash") ||
+      params.get("access_token")
+    ) {
       window.location.replace("/reset-password.html" + window.location.search + hash);
     }
   })();
