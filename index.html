@@ -4,20 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arca — A vessel for the life you're building</title>
-<meta name="description" content="Arca is a local-first personal operating system — focus, health, wealth, and what makes the rest worth doing. Captured locally. Reflected on slowly. macOS alpha.">
+<meta name="description" content="Arca is a local-first life operating system for Mac and iPhone: focus music, planning, daily practices, health capture, wealth tracking, Wisdom, and private AI coaching.">
 <link rel="canonical" href="https://www.witharca.app/">
 <meta property="og:url" content="https://www.witharca.app/">
 <meta property="og:title" content="Arca — A vessel for the life you're building">
-<meta property="og:description" content="A local-first personal operating system for focus, health, wealth, and what makes the rest worth doing.">
+<meta property="og:description" content="A local-first life operating system for focus, planning, practices, health, wealth, Wisdom, and private AI coaching.">
 <meta property="og:type" content="website">
 <link rel="icon" href="/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* Identity v1 — parchment / ink / bronze.
-     See arca/design/VISUAL_BRIEF.md and
-     arca/design/claude-design-output-v2/ for the canonical tokens. */
+  /* Identity v1 — parchment / ink / bronze. */
   :root {
     --paper: #f4efe6;
     --paper-2: #ebe4d6;
@@ -35,9 +33,10 @@
     --line: rgba(15,24,34,0.10);
     --line-2: rgba(15,24,34,0.06);
     --d-execute: #2f4a5c;
+    --d-plan: #6f6679;
     --d-health: #5a6b3a;
     --d-wealth: #8a5a2a;
-    --d-wise: #4a3a5c;
+    --d-wisdom: #4a3a5c;
     --shadow-accent: 0 8px 22px rgba(176,122,62,0.24);
     --shadow-icon: 0 40px 80px rgba(15,24,34,0.25), 0 0 0 1px rgba(15,24,34,0.04);
     --font-body: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -170,7 +169,7 @@
     background: var(--surface);
   }
 
-  /* Four pillars */
+  /* Product surfaces */
   .pillars {
     display: flex;
     gap: 32px;
@@ -312,36 +311,41 @@
 
   <section class="hero">
     <div class="hero-copy">
-      <div class="eyebrow">Local-first · macOS · Alpha</div>
+      <div class="eyebrow">Local-first · macOS + iPhone · Private Alpha</div>
       <h1 class="display">A vessel for the<br>life you're building.</h1>
-      <p class="hero-tagline">Arca is a personal operating system — focus, health, wealth, and what makes the rest worth doing. Captured locally. Reflected on slowly.</p>
+      <p class="hero-tagline">Arca is a local-first life operating system for focus, planning, daily practices, health, wealth, Wisdom, and private AI coaching. Capture quickly on iPhone. Reflect slowly on Mac.</p>
       <div class="ctas">
         <a class="btn btn-primary" href="/download-macos.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download for macOS
         </a>
-        <a class="btn btn-ghost" href="#why">Read the brief →</a>
+        <a class="btn btn-ghost" href="#why">Why Arca →</a>
       </div>
       <div class="pillars">
         <div class="pillar">
           <div class="pillar-bar" style="background: var(--d-execute);"></div>
           <div class="pillar-label">Execute</div>
-          <div class="pillar-sub">Focus · time · review</div>
+          <div class="pillar-sub">Focus · Music · Tasks</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-bar" style="background: var(--d-plan);"></div>
+          <div class="pillar-label">Plan</div>
+          <div class="pillar-sub">Goals · Today · Backlog</div>
         </div>
         <div class="pillar">
           <div class="pillar-bar" style="background: var(--d-health);"></div>
           <div class="pillar-label">Health</div>
-          <div class="pillar-sub">Body · recovery · sleep</div>
+          <div class="pillar-sub">Body · Recovery · Sleep</div>
         </div>
         <div class="pillar">
           <div class="pillar-bar" style="background: var(--d-wealth);"></div>
           <div class="pillar-label">Wealth</div>
-          <div class="pillar-sub">Net worth · cash · super</div>
+          <div class="pillar-sub">Net Worth · Cash · Super</div>
         </div>
         <div class="pillar">
-          <div class="pillar-bar" style="background: var(--d-wise);"></div>
-          <div class="pillar-label">Wise</div>
-          <div class="pillar-sub">Read · meditate · grow</div>
+          <div class="pillar-bar" style="background: var(--d-wisdom);"></div>
+          <div class="pillar-label">Wisdom</div>
+          <div class="pillar-sub">Practices · Reflection</div>
         </div>
       </div>
     </div>
@@ -352,29 +356,31 @@
 
   <section class="rationale" id="why">
     <div class="eyebrow">What Arca is</div>
-    <h2 class="display">A trusted vault for the life you're building.</h2>
+    <h2 class="display">A calm Apple-first system for focus, reflection, and the data of a life.</h2>
     <div class="rationale-grid">
       <div>
         <h3 id="privacy">Local-first</h3>
-        <p>Your data stays on your machine. No cloud sync by default, no telemetry, no analytics phoning home. SQLite under the hood, JSON snapshots in app storage, daily backups. If you ever stop using Arca, your data is yours to take with you.</p>
-        <h3>Focus + planning, in one</h3>
-        <p>The productivity spine: capture tasks, run focus sessions with a Pomodoro timer, log real time on real work, review your week with deep-ratio and closure metrics. Built around execution, not just lists.</p>
-        <h3>Health · Wealth · Wise</h3>
-        <p>Arca is evolving from a productivity tool into a four-domain personal operating system. Health (body composition, recovery, sleep). Wealth (net worth, cash flow, holdings). Wise (reading, meditation, languages). All in the same warm, calm surface.</p>
+        <p>Your data starts on your devices. Cloud sync is optional and exists to connect your own Mac and iPhone, not to turn Arca into a social platform or analytics product. If you ever stop using Arca, your data should still feel like yours.</p>
+        <h3>Mac + iPhone, one loop</h3>
+        <p>The iPhone companion is for fast capture: tick a life practice, move a task, start a focus session, or save health readings from screenshots. The Mac is for deep work, planning, dashboards, and longer coaching conversations.</p>
+        <h3>Focus + planning</h3>
+        <p>Arca gives you a focused daily work surface: practices at the top, a current task, ambient focus music, a timer, and a planning pipeline that keeps Today, Next Up, and Backlog in sync across devices.</p>
       </div>
       <div>
+        <h3>Health · Wealth · Wisdom</h3>
+        <p>The reflective rooms pair data with coaching. Health tracks recovery, sleep, body composition, and training. Wealth tracks net worth, cash flow, accounts, and spending. Wisdom tracks practices, reading, reflection, and the parts of life that make the rest worth doing.</p>
         <h3>AI on your terms</h3>
-        <p>An optional AI coach that runs against the providers you choose — Anthropic, OpenAI, Google, or a fully local Ollama setup. Your prompts and your data don't get bundled into anyone's training set.</p>
+        <p>AI is a coach and collaborator, not the owner of the system. Use local Ollama when privacy matters, or connect an API provider when you want more power. Coaches can help think through plans, explain trends, and act inside the app when you ask them to.</p>
         <h3>Designed to be lived in</h3>
-        <p>Warm parchment surfaces, deep navy ink, a single bronze accent. The mark is a vault-arch — two converging strokes meeting at a keystone, with a four-pillar base. Read the <a href="https://github.com/jwaterslynch/arca/blob/main/design/VISUAL_BRIEF.md">visual brief</a> if you want the long version.</p>
+        <p>Warm parchment surfaces, deep navy ink, bronze accents, and quiet sound cues. Arca is meant to feel less like another SaaS dashboard and more like a moleskin notebook, a focus room, and a private vault for the work of building a life.</p>
         <h3>What it is not</h3>
-        <p>Not a SaaS. Not a team-collaboration tool. Not a multi-user platform. Arca is a personal operating system, deliberately scoped to one user, deliberately scoped to deep work and the life that surrounds it.</p>
+        <p>Not a team-collaboration tool. Not a social network. Not a productivity slot machine. Arca is deliberately scoped to one person: the work in front of you, the practices that sustain you, and the longer arc you are trying to build.</p>
       </div>
     </div>
   </section>
 
   <footer class="footer">
-    <p>Local-first · macOS alpha · <a href="https://github.com/jwaterslynch/arca">GitHub</a></p>
+    <p>Local-first · macOS alpha · iPhone companion in private alpha</p>
   </footer>
 </body>
 </html>
