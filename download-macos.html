@@ -77,6 +77,14 @@
     letter-spacing: -0.02em;
   }
 
+  h2 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
   p {
     margin: 0;
     color: var(--text-2);
@@ -96,6 +104,19 @@
   }
 
   form { margin-top: 28px; }
+
+  .request-form { margin-top: 34px; }
+
+  .request-rule {
+    height: 1px;
+    background: var(--line);
+    margin: 0 0 24px;
+  }
+
+  .request-copy {
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
 
   .grid {
     display: grid;
@@ -231,15 +252,41 @@
     </div>
 
     <h1>Request Arca access.</h1>
-    <p>Arca is currently in a private alpha. Leave your email and a short note, and I will follow up with verification and invite details when access is available.</p>
-    <div class="note">No public download is served from this page. Alpha access should move through individual email capture and invite codes, not shared passwords or reusable direct links.</div>
+    <p>Arca is currently in a private alpha. If you already have an invite code, enter it with your email to download the current macOS build. Otherwise, leave a short request and I will follow up.</p>
+    <div class="note">Alpha access is gated by individual invite codes. The public page does not expose a reusable direct download link.</div>
 
-    <form id="accessForm">
+    <form id="downloadForm">
+      <input type="hidden" name="product" value="arca">
+      <input type="hidden" name="access_type" value="Private alpha download">
+      <div class="honeypot" aria-hidden="true">
+        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="downloadEmail">Email</label>
+          <input id="downloadEmail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="inviteCode">Invite code</label>
+          <input id="inviteCode" name="invite_code" type="password" autocomplete="off" spellcheck="false" required>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="button primary" id="downloadButton" type="submit">Unlock download</button>
+        <a class="button" href="/">Back to Arca</a>
+      </div>
+      <div id="downloadStatus" class="status" role="status" aria-live="polite"></div>
+    </form>
+
+    <form id="accessForm" class="request-form">
       <input type="hidden" name="product" value="arca">
       <input type="hidden" name="access_type" value="Arca alpha access">
       <div class="honeypot" aria-hidden="true">
         <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
       </div>
+      <div class="request-rule"></div>
+      <h2>Need a code?</h2>
+      <p class="request-copy">Request access and I will follow up with verification and invite details.</p>
       <div class="grid">
         <div class="field">
           <label for="name">Name</label>
@@ -265,8 +312,7 @@
       </label>
 
       <div class="actions">
-        <button class="button primary" id="submitButton" type="submit">Request access</button>
-        <a class="button" href="/">Back to Arca</a>
+        <button class="button" id="submitButton" type="submit">Request code</button>
       </div>
       <div id="accessStatus" class="status" role="status" aria-live="polite"></div>
     </form>
@@ -274,6 +320,10 @@
 
 <script>
   const PRODUCT_INTEREST_ENDPOINT = "/api/product-interest";
+  const DOWNLOAD_ENDPOINT = "/api/download";
+  const downloadForm = document.getElementById("downloadForm");
+  const downloadButton = document.getElementById("downloadButton");
+  const downloadStatusEl = document.getElementById("downloadStatus");
   const accessForm = document.getElementById("accessForm");
   const submitButton = document.getElementById("submitButton");
   const statusEl = document.getElementById("accessStatus");
@@ -322,11 +372,51 @@
       statusEl.className = "status error";
       statusEl.textContent = error.message || "Could not save request";
       submitButton.disabled = false;
-      submitButton.textContent = "Request access";
+      submitButton.textContent = "Request code";
     }
   });
 
-  document.getElementById("email").focus();
+  downloadForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = new FormData(downloadForm);
+    const payload = {
+      email: String(data.get("email") || ""),
+      invite_code: String(data.get("invite_code") || ""),
+      website: String(data.get("website") || ""),
+      page_path: window.location.pathname,
+      source_url: window.location.href,
+    };
+
+    downloadButton.disabled = true;
+    downloadButton.textContent = "Checking...";
+    downloadStatusEl.className = "status";
+    downloadStatusEl.textContent = "";
+
+    try {
+      const response = await fetch(DOWNLOAD_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok || !result.download_url) {
+        throw new Error(result.error || "Could not unlock download");
+      }
+
+      downloadStatusEl.className = "status success";
+      downloadStatusEl.textContent = `Unlocked ${result.download_name || "Arca.dmg"}. Download starting...`;
+      downloadButton.textContent = "Unlocked";
+      window.location.href = result.download_url;
+    } catch (error) {
+      downloadStatusEl.className = "status error";
+      downloadStatusEl.textContent = error.message || "Could not unlock download";
+      downloadButton.disabled = false;
+      downloadButton.textContent = "Unlock download";
+    }
+  });
+
+  document.getElementById("downloadEmail").focus();
 </script>
 </body>
 </html>

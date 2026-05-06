@@ -1,1 +1,3 @@
 .vercel
+.env*
+.arca-alpha-codes-*.txt
