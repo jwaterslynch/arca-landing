@@ -184,6 +184,13 @@
     line-height: 1.45;
   }
 
+  .field-help {
+    margin-top: -2px;
+    color: var(--text-3);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
   .consent input {
     width: auto;
     min-height: auto;
@@ -251,8 +258,8 @@
       <div class="wordmark">ARCA</div>
     </div>
 
-    <h1>Request Arca access.</h1>
-    <p>Arca is currently in a private alpha. If you already have an invite code, enter it with your email to download the current macOS build. Otherwise, leave a short request and I will follow up.</p>
+    <h1>Create your Arca account.</h1>
+    <p>Arca is currently in a private alpha. If you already have an invite code, create your account here and unlock the current macOS build. Use the same email and password for Cloud Sync inside Arca.</p>
     <div class="note">Alpha access is gated by individual invite codes. The public page does not expose a reusable direct download link.</div>
 
     <form id="downloadForm">
@@ -270,9 +277,18 @@
           <label for="inviteCode">Invite code</label>
           <input id="inviteCode" name="invite_code" type="password" autocomplete="off" spellcheck="false" required>
         </div>
+        <div class="field">
+          <label for="accountPassword">Password</label>
+          <input id="accountPassword" name="password" type="password" autocomplete="new-password" minlength="6" required>
+          <div class="field-help">At least 6 characters.</div>
+        </div>
+        <div class="field">
+          <label for="accountPasswordConfirm">Confirm password</label>
+          <input id="accountPasswordConfirm" name="password_confirm" type="password" autocomplete="new-password" minlength="6" required>
+        </div>
       </div>
       <div class="actions">
-        <button class="button primary" id="downloadButton" type="submit">Unlock download</button>
+        <button class="button primary" id="downloadButton" type="submit">Create account and download</button>
         <a class="button" href="/">Back to Arca</a>
       </div>
       <div id="downloadStatus" class="status" role="status" aria-live="polite"></div>
@@ -321,6 +337,8 @@
 <script>
   const PRODUCT_INTEREST_ENDPOINT = "/api/product-interest";
   const DOWNLOAD_ENDPOINT = "/api/download";
+  const SUPABASE_URL = "https://fncixgbeiqtschzdvhgk.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuY2l4Z2JlaXF0c2NoemR2aGdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4ODc1ODMsImV4cCI6MjA5MTQ2MzU4M30.xWhLy8gWdBVznHLXAi5I8YXk1Jk--Kl4DxX7vnPwkak";
   const downloadForm = document.getElementById("downloadForm");
   const downloadButton = document.getElementById("downloadButton");
   const downloadStatusEl = document.getElementById("downloadStatus");
@@ -342,6 +360,45 @@
       page_path: window.location.pathname,
       source_url: window.location.href,
     };
+  }
+
+  async function createArcaAccount(email, password) {
+    const redirectTo = encodeURIComponent("https://www.witharca.app");
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/signup?redirect_to=${redirectTo}`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        data: {
+          source: "witharca_invite_download",
+          product: "arca",
+        },
+      }),
+    });
+    const text = await response.text();
+    let data = {};
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+    }
+
+    if (!response.ok) {
+      const message = data.msg || data.error_description || data.error || data.message || `Auth error ${response.status}`;
+      if (/already|registered|exists/i.test(message)) {
+        return { alreadyExists: true };
+      }
+      throw new Error(message);
+    }
+
+    return data;
   }
 
   accessForm.addEventListener("submit", async (event) => {
@@ -386,9 +443,23 @@
       page_path: window.location.pathname,
       source_url: window.location.href,
     };
+    const password = String(data.get("password") || "");
+    const passwordConfirm = String(data.get("password_confirm") || "");
+
+    if (password.length < 6) {
+      downloadStatusEl.className = "status error";
+      downloadStatusEl.textContent = "Password must be at least 6 characters.";
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      downloadStatusEl.className = "status error";
+      downloadStatusEl.textContent = "Passwords do not match.";
+      return;
+    }
 
     downloadButton.disabled = true;
-    downloadButton.textContent = "Checking...";
+    downloadButton.textContent = "Checking invite...";
     downloadStatusEl.className = "status";
     downloadStatusEl.textContent = "";
 
@@ -404,15 +475,24 @@
         throw new Error(result.error || "Could not unlock download");
       }
 
+      downloadButton.textContent = "Creating account...";
+      downloadStatusEl.textContent = "Invite accepted. Creating your Arca account...";
+      const account = await createArcaAccount(payload.email.trim().toLowerCase(), password);
+      const accountMessage = account.alreadyExists
+        ? "Account already exists. Use the same email and password in Arca Cloud Sync."
+        : account.access_token
+          ? "Account created. Use these credentials in Arca Cloud Sync."
+          : "Account created. Confirm your email if Supabase sends a verification message, then sign in to Arca Cloud Sync.";
+
       downloadStatusEl.className = "status success";
-      downloadStatusEl.textContent = `Unlocked ${result.download_name || "Arca.dmg"}. Download starting...`;
+      downloadStatusEl.textContent = `${accountMessage} Download starting...`;
       downloadButton.textContent = "Unlocked";
       window.location.href = result.download_url;
     } catch (error) {
       downloadStatusEl.className = "status error";
       downloadStatusEl.textContent = error.message || "Could not unlock download";
       downloadButton.disabled = false;
-      downloadButton.textContent = "Unlock download";
+      downloadButton.textContent = "Create account and download";
     }
   });
 
