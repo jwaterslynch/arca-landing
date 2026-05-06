@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { insertAccessRequest } = require("../lib/supabase-access");
 
 const POSTHOG_KEY = process.env.POSTHOG_PROJECT_API_KEY || "phc_zGHxudZJZL5bUoqfrjvfvcRuhZMrJGQncX3ikPGRePQt";
 const POSTHOG_CAPTURE_HOST = (process.env.POSTHOG_CAPTURE_HOST || "https://us.i.posthog.com").replace(/\/$/, "");
@@ -205,6 +206,24 @@ module.exports = async function handler(req, res) {
   };
 
   try {
+    await insertAccessRequest({
+      product,
+      email,
+      name: properties.name,
+      organization: properties.organization,
+      message: properties.message,
+      accessType: properties.access_type,
+      sourceUrl: properties.source_url,
+      pagePath: properties.page_path,
+      userAgent: properties.user_agent,
+      metadata: {
+        product_label: properties.product_label,
+        audience_key: properties.audience_key,
+        invite_code_present: properties.invite_code_present,
+        invite_code_hash: properties.invite_code_hash,
+        submitted_at: properties.submitted_at,
+      },
+    });
     await captureProductInterest(properties);
     sendJson(req, res, 200, { ok: true });
   } catch (error) {

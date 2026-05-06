@@ -1,4 +1,8 @@
 const crypto = require("crypto");
+const {
+  insertDownloadEvent,
+  upsertProductMembership,
+} = require("../lib/supabase-access");
 
 const POSTHOG_KEY = process.env.POSTHOG_PROJECT_API_KEY || "phc_zGHxudZJZL5bUoqfrjvfvcRuhZMrJGQncX3ikPGRePQt";
 const POSTHOG_CAPTURE_HOST = (process.env.POSTHOG_CAPTURE_HOST || "https://us.i.posthog.com").replace(/\/$/, "");
@@ -252,6 +256,39 @@ module.exports = async function handler(req, res) {
     user_agent: cleanString(req.headers["user-agent"], 300),
     unlocked_at: new Date().toISOString(),
   });
+
+  let membership = null;
+  try {
+    membership = await upsertProductMembership({
+      product: "arca",
+      email,
+      tier: "alpha",
+      role: "tester",
+      status: "active",
+      source: "invite_code",
+      inviteCodeHash: codeHmac(inviteCode),
+      metadata: {
+        access_type: "Private alpha download",
+        download_version: download.version,
+        last_unlocked_at: new Date().toISOString(),
+      },
+    });
+    await insertDownloadEvent({
+      product: "arca",
+      email,
+      membershipId: membership?.id,
+      inviteCodeHash: codeHmac(inviteCode),
+      artifactName: download.name,
+      artifactVersion: download.version,
+      sourceUrl: cleanString(body.source_url, 500),
+      pagePath: cleanString(body.page_path, 240),
+      userAgent: cleanString(req.headers["user-agent"], 300),
+    });
+  } catch (error) {
+    console.error("product access activation failed", error);
+    sendJson(req, res, 502, { ok: false, error: "Invite accepted, but Arca access could not be activated. Please try again." });
+    return;
+  }
 
   sendJson(req, res, 200, {
     ok: true,
