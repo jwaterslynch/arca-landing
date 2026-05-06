@@ -3,60 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arca Private Alpha Download</title>
-<meta name="description" content="Download the latest Arca macOS private alpha build.">
+<title>Request Arca Access</title>
+<meta name="description" content="Request invite-gated access to the Arca macOS private alpha.">
 <link rel="canonical" href="https://www.witharca.app/download-macos.html">
 <link rel="icon" href="/icon.png">
 <style>
   :root {
     --paper: #f4efe6;
     --surface: #fdfbf6;
+    --surface-2: #f7f1e5;
     --ink: #0f1822;
     --text: #1a2532;
     --text-2: #5b6573;
+    --text-3: #8a8d92;
     --accent: #b07a3e;
+    --accent-deep: #8a5a2a;
     --line: rgba(15,24,34,0.10);
+    --error: #a3483b;
+    --success: #234c37;
     --font: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
+
   * { box-sizing: border-box; }
+
   body {
     margin: 0;
     min-height: 100vh;
     display: grid;
     place-items: center;
     padding: 24px;
-    background: var(--paper);
+    background:
+      radial-gradient(880px 480px at 12% -8%, rgba(176,122,62,0.12), transparent 60%),
+      radial-gradient(720px 420px at 100% 108%, rgba(15,24,34,0.07), transparent 60%),
+      var(--paper);
     color: var(--text);
     font-family: var(--font);
   }
+
   .panel {
-    width: min(560px, 100%);
+    width: min(620px, 100%);
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 28px;
     padding: 36px;
     box-shadow: 0 28px 70px rgba(15,24,34,0.14);
   }
+
+  .brand {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .brand img {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
   .wordmark {
     font-size: 13px;
     font-weight: 800;
     letter-spacing: .18em;
-    color: var(--accent);
-    margin-bottom: 28px;
+    color: var(--accent-deep);
   }
-  h1 { margin: 0 0 10px; font-size: 30px; line-height: 1.12; letter-spacing: 0; }
-  p { margin: 0; color: var(--text-2); font-size: 16px; line-height: 1.55; }
-  form { margin-top: 28px; }
-  label {
-    display: block;
-    margin-bottom: 8px;
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(30px, 6vw, 42px);
+    line-height: 1.06;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .note {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid rgba(176,122,62,0.18);
+    background: rgba(176,122,62,0.08);
+    border-radius: 16px;
     color: var(--text);
-    font-size: 13px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  form { margin-top: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    color: var(--text);
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: .12em;
     text-transform: uppercase;
   }
-  input {
+
+  input,
+  textarea {
     width: 100%;
     min-height: 50px;
     padding: 0 16px;
@@ -64,15 +129,56 @@
     border-radius: 14px;
     background: white;
     color: var(--ink);
-    font: 700 16px/1.2 var(--font);
+    font: 600 16px/1.2 var(--font);
     outline: none;
   }
-  input:focus {
+
+  textarea {
+    min-height: 116px;
+    padding-top: 14px;
+    resize: vertical;
+    line-height: 1.45;
+  }
+
+  input:focus,
+  textarea:focus {
     border-color: rgba(176,122,62,0.58);
     box-shadow: 0 0 0 4px rgba(176,122,62,0.12);
   }
-  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+
+  .honeypot {
+    position: absolute;
+    left: -5000px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 4px 0 20px;
+    color: var(--text-2);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .consent input {
+    width: auto;
+    min-height: auto;
+    margin-top: 3px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 22px;
+  }
+
   a { color: inherit; }
+
   .button {
     display: inline-flex;
     align-items: center;
@@ -85,97 +191,142 @@
     font-weight: 700;
     font: 700 14px/1 var(--font);
     cursor: pointer;
+    background: transparent;
+    color: var(--ink);
   }
-  .button.primary { background: var(--accent); border-color: var(--accent); color: white; }
-  .status { margin-top: 18px; font-size: 13px; color: var(--text-2); }
-  .status.error { color: #a3483b; }
-  .download-actions { display: none; }
-  .download-actions.is-visible { display: flex; }
+
+  .button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .button:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+
+  .status {
+    margin-top: 18px;
+    min-height: 1.4em;
+    font-size: 13.5px;
+    color: var(--text-3);
+  }
+
+  .status.error { color: var(--error); }
+  .status.success { color: var(--success); }
+
+  @media (max-width: 640px) {
+    body { padding: 16px; }
+    .panel { padding: 26px; border-radius: 22px; }
+    .grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
   <main class="panel">
-    <div class="wordmark">ARCA</div>
-    <h1>Private alpha download.</h1>
-    <p>Arca is currently invite-only. Enter the alpha code you were given and the latest macOS build will start downloading.</p>
-    <form id="inviteForm">
-      <label for="inviteCode">Invite code</label>
-      <input id="inviteCode" name="inviteCode" type="password" autocomplete="off" spellcheck="false" placeholder="Enter alpha code">
+    <div class="brand">
+      <img src="/icon.png" alt="Arca mark">
+      <div class="wordmark">ARCA</div>
+    </div>
+
+    <h1>Request Arca access.</h1>
+    <p>Arca is currently in a private alpha. Leave your email and a short note, and I will follow up with verification and invite details when access is available.</p>
+    <div class="note">No public download is served from this page. Alpha access should move through individual email capture and invite codes, not shared passwords or reusable direct links.</div>
+
+    <form id="accessForm">
+      <input type="hidden" name="product" value="arca">
+      <input type="hidden" name="access_type" value="Arca alpha access">
+      <div class="honeypot" aria-hidden="true">
+        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field full">
+          <label for="organization">Organisation</label>
+          <input id="organization" name="organization" type="text" autocomplete="organization">
+        </div>
+        <div class="field full">
+          <label for="message">Use case or note</label>
+          <textarea id="message" name="message" placeholder="A sentence or two is enough."></textarea>
+        </div>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="consent" required>
+        <span>You can contact me about Arca access, alpha releases, and product updates. I understand this request is stored for follow-up and product-interest tracking.</span>
+      </label>
+
       <div class="actions">
-        <button class="button primary" type="submit">Unlock Download</button>
+        <button class="button primary" id="submitButton" type="submit">Request access</button>
         <a class="button" href="/">Back to Arca</a>
       </div>
+      <div id="accessStatus" class="status" role="status" aria-live="polite"></div>
     </form>
-    <div id="downloadActions" class="actions download-actions">
-      <a id="downloadLink" class="button primary" href="#">Download Arca.dmg</a>
-      <a class="button" href="/">Back to Arca</a>
-    </div>
-    <div id="downloadStatus" class="status">Private alpha access required.</div>
   </main>
 
 <script>
-  const inviteCode = "keystone-quiet-26";
-  const fallbackDownloadUrl = "https://github.com/jwaterslynch/arca-releases/releases/download/v0.1.0-beta.24/Arca_0.1.0-beta.24_aarch64.dmg";
-  const latestReleaseApiUrl = "https://api.github.com/repos/jwaterslynch/arca-releases/releases/latest";
-  const inviteForm = document.getElementById("inviteForm");
-  const inviteInput = document.getElementById("inviteCode");
-  const downloadActions = document.getElementById("downloadActions");
-  const downloadLink = document.getElementById("downloadLink");
-  const statusEl = document.getElementById("downloadStatus");
-  const alphaSessionKey = "arca-alpha-download-unlocked";
+  const PRODUCT_INTEREST_ENDPOINT = "/api/product-interest";
+  const accessForm = document.getElementById("accessForm");
+  const submitButton = document.getElementById("submitButton");
+  const statusEl = document.getElementById("accessStatus");
 
-  function normaliseCode(value) {
-    return String(value || "").trim().toLowerCase();
+  function formPayload(form) {
+    const data = new FormData(form);
+    return {
+      product: String(data.get("product") || "arca"),
+      access_type: String(data.get("access_type") || "Arca alpha access"),
+      name: String(data.get("name") || ""),
+      email: String(data.get("email") || ""),
+      organization: String(data.get("organization") || ""),
+      message: String(data.get("message") || ""),
+      website: String(data.get("website") || ""),
+      consent: data.get("consent") === "on",
+      page_path: window.location.pathname,
+      source_url: window.location.href,
+    };
   }
 
-  function startDownload(url, label = "Download Arca.dmg") {
-    downloadLink.href = url;
-    downloadLink.textContent = label;
-    statusEl.textContent = "Download starting...";
-    window.location.href = url;
-  }
-
-  async function resolveLatestDownload() {
-    try {
-      const res = await fetch(latestReleaseApiUrl, { headers: { Accept: "application/vnd.github+json" } });
-      if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
-      const release = await res.json();
-      const assets = Array.isArray(release.assets) ? release.assets : [];
-      const dmg = assets.find(asset => /Arca_.*_aarch64\.dmg$/i.test(asset.name || ""))
-        || assets.find(asset => /\.dmg$/i.test(asset.name || ""));
-      if (!dmg?.browser_download_url) throw new Error("No macOS DMG asset found on the latest release.");
-      startDownload(dmg.browser_download_url, `Download ${dmg.name || "Arca.dmg"}`);
-    } catch (err) {
-      statusEl.textContent = "Could not resolve the latest build automatically. Using the current macOS build.";
-      startDownload(fallbackDownloadUrl);
-    }
-  }
-
-  function unlockDownload() {
-    inviteForm.style.display = "none";
-    downloadActions.classList.add("is-visible");
-    statusEl.classList.remove("error");
-    statusEl.textContent = "Finding the latest macOS build...";
-    sessionStorage.setItem(alphaSessionKey, "1");
-    resolveLatestDownload();
-  }
-
-  inviteForm.addEventListener("submit", event => {
+  accessForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (normaliseCode(inviteInput.value) === inviteCode) {
-      unlockDownload();
-      return;
+    const payload = formPayload(accessForm);
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+    statusEl.className = "status";
+    statusEl.textContent = "";
+
+    try {
+      const response = await fetch(PRODUCT_INTEREST_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Could not save request");
+      }
+
+      accessForm.reset();
+      statusEl.className = "status success";
+      statusEl.textContent = "Request saved. I will follow up by email with verification and invite details.";
+      submitButton.textContent = "Request sent";
+    } catch (error) {
+      statusEl.className = "status error";
+      statusEl.textContent = error.message || "Could not save request";
+      submitButton.disabled = false;
+      submitButton.textContent = "Request access";
     }
-    statusEl.classList.add("error");
-    statusEl.textContent = "That invite code did not work. Check the code and try again.";
-    inviteInput.select();
   });
 
-  if (sessionStorage.getItem(alphaSessionKey) === "1") {
-    unlockDownload();
-  } else {
-    inviteInput.focus();
-  }
+  document.getElementById("email").focus();
 </script>
 </body>
 </html>
